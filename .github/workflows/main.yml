@@ -1,0 +1,35 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout do repositório
+      uses: actions/checkout@v3
+
+    - name: Configurar Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.10"
+
+    - name: Instalar dependências (se tiver requirements.txt)
+      run: |
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+    - name: Build da imagem Docker
+      run: |
+        docker build -t infra_agil .
+
+    - name: Executar scripts de notificação (opcional)
+      run: |
+        chmod +x notificacaoSucesso.sh
+        chmod +x notificacaoFalha.sh
+        echo "Scripts preparados"
+
